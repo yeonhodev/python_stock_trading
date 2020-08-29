@@ -9,8 +9,27 @@ iteration_test = """
 for i in itr :
   pass
 """
+# list
 print(timeit.timeit(iteration_test, setup='itr = list(range(10000))', number=10000))
-
+# tuple
 print(timeit.timeit(iteration_test, setup='itr = tuple(range(10000))', number=10000))
-
+# set
 print(timeit.timeit(iteration_test, setup='itr = set(range(10000))', number=10000))
+
+# 검색속도 비교하기
+# 다음은 표준 라이브러리인 random 모듈의 randint() 함수를 이용하여 0 이상 9999 이하의 임의의 난수를 생성한 후, 0부터 9999까지 정수 1만 개로 구성된 반복 자료형에 존재하는지 검색(if ~ in ~)하는 코드다.
+
+search_test = """
+import random
+x = random.randint(0, len(itr)-1)
+if x in itr:
+  pass
+"""
+#임의의 난수를 검색하는 작업을 1000 번씩 반복해서 수행한 결과, 셋의 검색 속도가 리스트나 튜플보다 월등히 빠른 것으로 나타났다.
+
+# set
+print(timeit.timeit(search_test, setup='itr = set(range(10000))', number=10000))
+# list
+print(timeit.timeit(search_test, setup='itr = list(range(10000))', number=10000))
+#tuple
+print(timeit.timeit(search_test, setup='itr = tuple(range(10000))', number=10000))
