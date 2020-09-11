@@ -10,3 +10,6 @@ from PIL import Image
 img = Image.open(r)
 img.show()
 img.save('src.png')
+
+# Print file info
+print(img.get_format_mimetype)
