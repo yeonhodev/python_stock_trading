@@ -16,3 +16,15 @@ print(A[0][0], A[0][1])
 print(A[1][0], A[1][1])
 print(A[0, 0], A[0, 1])
 print(A[1, 0], A[1, 1])
+
+# 조건에 맞는 원소들만 인덱싱할 수도 있다. 
+print(A[A>1])
+
+# Transpose - 배열의 요소를 주대각선을 기준으로 뒤바꾸는 것
+print(A)
+print(A.T) # A.transpose()와 같다. 
+
+# Flatten - 다차원 배열을 1차원 배열 형태로 바꾸는 것; 평탄화
+print(A)
+print(A.flatten())
+
