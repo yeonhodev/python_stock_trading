@@ -28,3 +28,15 @@ print(A.T) # A.transpose()와 같다.
 print(A)
 print(A.flatten())
 
+# 배열의 연산 (Array Operations)
+# 같은 크기의 행렬끼리는 사칙 연산을 할 수 있다. 두 행렬에서 같은 위치에 있는 원소끼리 연산을 하면 된다. 
+
+print(A + A) # np.add(A, A)와 같다. 
+print(A - A) # np.subtract(A, A)와 같다. 
+print(A * A) # np.multiply(A, A)와 같다. 
+print(A / A) # np.divide(A, A)와 같다. 
+
+# Broadcasting ; 수학에서는 크기가 같은 행렬끼리만 연산을 할 수 있다. 하지만 넘파이에서는 행렬의 크기가 달라도 연산할 수 있게 크기가 작은 행렬을 확장해 주는데, 이를 브로드캐스팅이라고 한다. 다음은 B 행렬을 A 행렬의 크기에 맞게 브로드캐스팅하여 연산한 예이다. 
+
+B = np.array([10, 100])
+print(A * B)
