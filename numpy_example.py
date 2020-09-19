@@ -40,3 +40,9 @@ print(A / A) # np.divide(A, A)와 같다.
 
 B = np.array([10, 100])
 print(A * B)
+
+# 내적(inner product)구하기
+# 넘파이에서 배열끼리 곱셈연산(*)을 할 때 기본적으로 원소별 연산을 수행하기 때문에 두 배열의 내적 곱을 구하려면 dot() 함수를 사용해야 한다. 
+print(B.dot(B)) # np.dot(B * B)
+
+print(A.dot(B))
