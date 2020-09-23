@@ -33,3 +33,17 @@ rows.append([2467, 798])
 rows.append([2041, 675])
 df = pd.DataFrame(rows, columns=columns, index=index)
 print(df)
+
+# 데이터프레임 순회 처리
+for i in df.index:
+    print([i, df['KOSPI'][i], df['KOSDAQ'][i]])
+
+# itertuples() 메서드는 데이터프레임의 각 행을 이름있는 튜플 형태로 반환한다. 
+for row in df.itertuples(name='KRX'):
+    print(row)
+
+for row in df.itertuples():
+    print(row[0], row[1], row[2])
+
+for idx, row in df.iterrows():
+    print(idx, row[0], row[1])
