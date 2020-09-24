@@ -10,3 +10,8 @@ sec = pdr.get_data_yahoo('005930.KS', start='2018-05-04')
 msft = pdr.get_data_yahoo('MSFT', start='2018-05-04')
 
 print(sec.head(10))
+
+# Volume 칼럼 제거
+tmp_msft = msft.drop(columns='Volume')
+print(tmp_msft.tail())
+
