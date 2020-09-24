@@ -15,3 +15,8 @@ print(sec.head(10))
 tmp_msft = msft.drop(columns='Volume')
 print(tmp_msft.tail())
 
+# 인덱스 확인
+print(sec.index)
+
+# 칼럼 확인
+print(sec.columns)
