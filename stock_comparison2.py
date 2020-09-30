@@ -54,4 +54,3 @@ print(sec_dpc.describe())
 # sec_dpc는 일간 변동률이기 때문에 종목별로 전체적인 변동률을 비교해보려면, 일간 변동률 누적합(Cumulative Sum)을 계산해야 한다. 누적합은 시리즈에서 제공하는 cumsum() 함수를 이용하여 구할 수 있다. 
 sec_dpc_cs = sec_dpc.cumsum() # 일간 변동률의 누적합을 구한다. 
 print(sec_dpc_cs)
-
