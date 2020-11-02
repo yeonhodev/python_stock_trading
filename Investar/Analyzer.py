@@ -3,12 +3,15 @@ import pymysql
 from datetime import datetime
 from datetime import timedelta
 import re
+import mariadb_config
+
+passwd = mariadb_config.passwd
 
 class MarketDB:
     def __init__(self):
         """생성자: MariaDB 연결 및 종목코드 딕셔너리 생성"""
         self.conn = pymysql.connect(host='localhost', user='root', 
-            password='snake.land.', db='INVESTAR', charset='utf8')
+            password=passwd, db='Investar', charset='utf8')
         self.codes = {}
         self.get_comp_info()
         
