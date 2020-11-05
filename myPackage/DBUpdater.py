@@ -1,4 +1,5 @@
 import pymysql
+import pandas as pd
 import mariadb_config
 
 passwd = mariadb_config.passwd
@@ -42,6 +43,21 @@ class DBUpdater:
     
     def read_krx_code(self):
         """KRX로 부터 상장법인목록 파일을 읽어와서 데이터프레임으로 변환"""
+        url = 'http://kind/krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13'
+        
+        # 상장법인목록 .xls 파일을 read_html() 함수로 읽는다. 
+        krx = pd.read_html(url, header=0)[0]
+
+        # 종목코드 칼럼과 회사명만 남긴다. 데이터프레임에 [[]]을 사용하면 특정 칼럼만 뽑아서 원하는 순서대로 재구성할 수 있다. 
+        krx = krx[['종목코드', '회사명']]
+
+        # 한글 칼럼명을 영문 칼럼명으로 변경한다. 
+        krx = krx.rename(columns={'종목코드':'code', '회사명':'company'})
+
+        # 종목코드 형식을 {:06d} 형식의 문자열로 변경한다. 
+        krx.code = krx.code.map('{:06d}'.format)
+        
+        return krx
     
     def update_comp_info(self):
         """종목코드를 company_info 테이블에 업데이트한 후 딕셔너리에 저장"""
