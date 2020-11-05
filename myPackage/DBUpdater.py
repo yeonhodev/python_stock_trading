@@ -1,5 +1,5 @@
 import pymysql
-from python_stock_trading import mariadb_config
+import mariadb_config
 
 passwd = mariadb_config.passwd
 
