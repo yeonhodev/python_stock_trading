@@ -61,6 +61,39 @@ class DBUpdater:
     
     def update_comp_info(self):
         """종목코드를 company_info 테이블에 업데이트한 후 딕셔너리에 저장"""
+        sql = "SELECT * FROM company_info"
+
+        # company_info 테이블을 read_sql() 함수로 읽는다. 
+        df = pd.read_sql(sql, self.conn)
+
+        # 위에서 읽은 데이터프레임을 이용해서 종목코드와 회사명으로 codes 딕셔너리를 만든다.  
+        for idx in range(len(df)):
+            self.codes[df['code'].values[idx]]=df['company'].values[idx]
+        with self.conn.cursor() as curs:
+            sql = "SELECT max(last_update) FROM company_info"
+            curs.execute(sql)
+            # SELECT max() ~ 구문을 이용해서 DB에서 가장 최근 업데이트 날짜를 가져온다. 
+            rs = curs.fetchone()
+            today = datetime.today().strftime('%Y-%m-%d')
+
+            # 위에서 구한 날짜가 존재하지 않거나 오늘보다 오래된 경우에만 업데이트 한다. 
+            if rs[0] == None or rs[0].strftime('%Y-%m-%d') < today:
+                # KRX 상장기업 목록 파일을 읽어서 krx 데이터프레임을 저장한다. 
+                krx = self.read_krx_code()
+                for idx in range(len(krx)):
+                    code = krx.code.values[idx]
+                    company = krx.company.values[idx]
+                    sql = f"REPLACE INTO company_info (code, company, last_update) VALUES ('{code}', '{company}', '{today}'"
+                    # REPLACE INTO 구문을 이용해서 '종목코드, 회사명, 오늘날짜' 행을 DB에 저장한다. 
+                    curs.execute(sql)
+                    # codes 딕셔너리에 '키-값'으로 종목코드와 회사명을 추가한다. 
+                    self.codes[code] = company
+                    tmnow = datetime.now().strftime('%Y-%m-%d %H:%M')
+                    print(f"[{tmnow}] {idx:04d} REPLACE INTO company_info VALUES({code}, {company}, {today})")
+                    self.conn.commit()
+                    print('')
+
+            
     
     def read_naver(self, code, company, pages_to_fetch):
         """네이버 금융에서 주식 시세를 읽어서 데이터프레임으로 변환"""
