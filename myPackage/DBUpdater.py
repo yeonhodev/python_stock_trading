@@ -97,7 +97,41 @@ class DBUpdater:
                     print()
 
     def read_naver(self, code, company, pages_to_fetch):
-        """네이버 금융에서 주식 시세를 읽어서 데이터프레임으로 변환"""
+        """네이버 금융에서 주식 시세를 읽어서 데이터프레임으로 반환"""
+        try:
+            url = f"http://finance.naver.com/item/sise_day.nhn?code={code}"
+            with urlopen(url) as doc:
+                if doc is None:
+                    return None
+                html = BeautifulSoup(doc, 'lxml')
+                pgrr = htmlfind("td", class_="pgRR")
+                if pgrr is None:
+                    return None
+                s = str(pgrr.a["href"]).split('=')
+                # 네이버 금융에서 일별 시세의 마지막 페이지를 구한다. 
+                lastpage = s[-1]
+            df = pd.DataFrame()
+            # 설정 파일에 설정된 페이지 수 (pages_to_fetch)와 위에서 구한 일별시세의 마지막 페이지 중 작은 것을 선택한다. 
+            pages = min(int(lastpage), pages_to_fetch)
+            for page in range(1, pages + 1):
+                pg_url = '{}&page={}'.format(url, page)
+                # 일별 시세 페이지를 read_html()로 읽어서 데이터프레임에 추가한다. 
+                df = df.append(pd.read_html(pg_url, header=0)[0])
+                tmnow = datetime.now().strftime('%Y-%m-%d %H:%M')
+                print('[{}] {} ({}) : {:04d}/{:04d} pages are downloading...'.format(tmnow, company, code, page, pages), end="\r")
+            # 네이버 금융의 한글 칼럼명을 영문 칼럼명으로 변경한다. 
+            df = df.rename(columns={'날짜':'date', '종가':'close', '전일비':'diff', '시가':'open', '고가':'high', '저가':'low', '거래량':'volume'})
+            # 연.월.일 형식의 일자 데이터를 연-월-일 형식으로 변경한다. 
+            df['date'] = df['date'].replace('.', '-')
+            df = df.dropna()
+            # 마리아디비에서 BIGINT 형으로 저장한 칼럼들의 데이터형을 int 형으로 변경한다. 
+            df[['close', 'diff', 'open', 'high', 'low', 'volume']] = df[['close', 'diff', 'open', 'high', 'lose', 'volume']].astype(int)
+            # 원하는 순서대로 칼럼을 재조합하여 데이터프레임을 만든다. 
+            df = df[['date', 'open', 'high', 'low', 'close', 'diff', 'volume']]
+        except Exception as e:
+            print('Exception occured :', str(e))
+            return None
+        return df
 
     def replace_into_db(self, df, num, code, company):
         """KRX 상장법인의 주식 시세를 네이버로부터 읽어서 DB에 업데이트"""
