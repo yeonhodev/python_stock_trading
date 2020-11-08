@@ -46,7 +46,7 @@ class DBUpdater:
     # KRX로 부터 상장법인 목록 파일을 읽어온다. 
     def read_krx_code(self):
         """KRX로 부터 상장법인목록 파일을 읽어와서 데이터프레임으로 변환"""
-        url = 'http://kind/krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13'
+        url = 'http://kind.krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13'
         
         # 상장법인목록 .xls 파일을 read_html() 함수로 읽는다. 
         krx = pd.read_html(url, header=0)[0]
@@ -86,7 +86,7 @@ class DBUpdater:
                 for idx in range(len(krx)):
                     code = krx.code.values[idx]
                     company = krx.company.values[idx]
-                    sql = f"REPLACE INTO company_info (code, company, last_update) VALUES ('{code}', '{company}', '{today}'"
+                    sql = f"REPLACE INTO company_info (code, company, last_update) VALUES ('{code}', '{company}', '{today}')"
                     # REPLACE INTO 구문을 이용해서 '종목코드, 회사명, 오늘날짜' 행을 DB에 저장한다. 
                     curs.execute(sql)
                     # codes 딕셔너리에 '키-값'으로 종목코드와 회사명을 추가한다. 
@@ -94,7 +94,7 @@ class DBUpdater:
                     tmnow = datetime.now().strftime('%Y-%m-%d %H:%M')
                     print(f"[{tmnow}] {idx:04d} REPLACE INTO company_info VALUES({code}, {company}, {today})")
                     self.conn.commit()
-                    print('')
+                    print()
 
     def read_naver(self, code, company, pages_to_fetch):
         """네이버 금융에서 주식 시세를 읽어서 데이터프레임으로 변환"""
@@ -109,5 +109,7 @@ if __name__ == '__main__':
     # DBUpdater.py가 단독으로 실행되면 DBUpdater 객체를 생성한다. 
     dbu = DBUpdater()
 
-    # company_info 테이블에 오늘 업데이트 된 내용이 있는지 확인하고, 없으면 read_krx_code()를 호출하여 company_info 테이블에 업데이트 하고 codes 딕셔너리에도 저장한다. 
     dbu.execute_daily()
+    
+    # company_info 테이블에 오늘 업데이트 된 내용이 있는지 확인하고, 없으면 read_krx_code()를 호출하여 company_info 테이블에 업데이트 하고 codes 딕셔너리에도 저장한다. 
+    dbu.update_comp_info()
