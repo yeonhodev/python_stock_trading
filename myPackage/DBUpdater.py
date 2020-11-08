@@ -1,10 +1,12 @@
 import pymysql
 import pandas as pd
 import mariadb_config
+from datetime import datetime
 
 passwd = mariadb_config.passwd
 
 class DBUpdater:
+    # DBUpdater의 생성자 내부에서 마리아디비에 연결한다. 
     def __init__(self):
         """생성자: MariaDB 연결 및 종목코드 딕셔너리 생성"""
         self.conn = pymysql.connect(host='localhost', user='root', password=passwd, db='INVESTAR', charset='utf8')
@@ -41,6 +43,7 @@ class DBUpdater:
         """소멸자: MariaDB 연결 해제"""
         self.conn.close()
     
+    # KRX로 부터 상장법인 목록 파일을 읽어온다. 
     def read_krx_code(self):
         """KRX로 부터 상장법인목록 파일을 읽어와서 데이터프레임으로 변환"""
         url = 'http://kind/krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13'
@@ -93,8 +96,6 @@ class DBUpdater:
                     self.conn.commit()
                     print('')
 
-            
-    
     def read_naver(self, code, company, pages_to_fetch):
         """네이버 금융에서 주식 시세를 읽어서 데이터프레임으로 변환"""
 
@@ -105,5 +106,8 @@ class DBUpdater:
         """실행 즉시 및 매일 오후 다섯시에 daily_price 테이블 업데이트"""
     
 if __name__ == '__main__':
+    # DBUpdater.py가 단독으로 실행되면 DBUpdater 객체를 생성한다. 
     dbu = DBUpdater()
+
+    # company_info 테이블에 오늘 업데이트 된 내용이 있는지 확인하고, 없으면 read_krx_code()를 호출하여 company_info 테이블에 업데이트 하고 codes 딕셔너리에도 저장한다. 
     dbu.execute_daily()
