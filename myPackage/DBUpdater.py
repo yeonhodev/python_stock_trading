@@ -134,7 +134,17 @@ class DBUpdater:
         return df
 
     def replace_into_db(self, df, num, code, company):
-        """KRX 상장법인의 주식 시세를 네이버로부터 읽어서 DB에 업데이트"""
+        """네이버에서 읽어 온 주식 시세를 DB에 REPLACE"""
+        with self.conn.cursor() as curs:
+            # 인수로 넘겨받은 데이터프레임을 튜플로 순회처리한다. 
+            for r in df.intertuples():
+                sql = f"REPLACE INTO daily_price VALUES ('{code}', '{r.date}', {r.open}, {r.high}, {r.low}, {r.close}, {r.diff}, {r.volume})"
+                # REPLACE INTO 구문으로 daily_price 테이블을 업데이트 한다. 
+                curs.execute(sql)
+            # commit() 함수를 호출해 마리아디비에 반영한다. 
+            self.conn.commit()
+            print('[{}] #{:04d} {} ({}) : {} rows > REPLACE INTO daily_price [OK]'.format(datetime.now().strftime('%Y-%m-%d %H:%M'), num+1, company, code, len(df)))
+        
 
     def execute_daily(self):
         """실행 즉시 및 매일 오후 다섯시에 daily_price 테이블 업데이트"""
