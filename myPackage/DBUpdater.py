@@ -144,7 +144,17 @@ class DBUpdater:
             # commit() 함수를 호출해 마리아디비에 반영한다. 
             self.conn.commit()
             print('[{}] #{:04d} {} ({}) : {} rows > REPLACE INTO daily_price [OK]'.format(datetime.now().strftime('%Y-%m-%d %H:%M'), num+1, company, code, len(df)))
-        
+
+    def update_daily_price(self, pages_to_fetch):
+        """KRX 상장법인의 주식 시세를 네이버로부터 읽어서 DB에 업데이트"""
+        # self.codes 딕셔너리에 저장된 모든 종목코드에 대해 순회처리한다. 
+        for idx, code in enumerate(self, codes):
+            # read_naver() 메서드를 이용하여 종목코드에 대한 일별 시세 데이터 프레임을 구한다. 
+            df = self.read_naver(code, self.codes[code], pages_to_fetch)
+            if df is None:
+                continue
+            # 일별 시세 데이터프레임이 구해지면 replace_into_db() 메서드로 DB에 저장한다. 
+            self.replace_into_db(df, idx, code, self.codes[code])        
 
     def execute_daily(self):
         """실행 즉시 및 매일 오후 다섯시에 daily_price 테이블 업데이트"""
