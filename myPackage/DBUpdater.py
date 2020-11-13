@@ -158,6 +158,41 @@ class DBUpdater:
 
     def execute_daily(self):
         """실행 즉시 및 매일 오후 다섯시에 daily_price 테이블 업데이트"""
+        # update_comp_info() 메서드를 호출하여 상장 법인 목록을 DB에 업데이트 한다. 
+        self.update_comp_info()
+        try:
+            # DBUpdater.py가 있는 디렉터리에서 config.json 파일을 읽기 모드로 연다. 
+            with open('config.json', 'r') as in_file:
+                config = json.load(in_file)
+                # 파일이 있다면 pages_to_fetch 값을 읽어서 프로그램에서 사용한다. 
+                pages_to_fetch = config['pages_to_fetch']
+        # 위에서 열려고 했던 config.json 파일이 존재하지 않는 경우
+        except FileNotFoundError:
+            with open('config.json', 'w') as out_file:
+                # 최초 실행 시 프로그램에서 사용할 page_to_fetch 값을 100으로 설정한다. (config.json 파일에 page_to_fetch 값을 1로 저장해서 이후부터는 1페이지씩 읽음)
+                pages_to_fetch = 100
+                config = {'pages_to_fetch': 1}
+                json.dump(config, out_file)
+        # page_to_fetch 값으로 update_daily_price() 메소드를 호출한다.
+        self.update_daily_price(pages_to_fetch)
+
+        tmnow = datetime.now()
+        # 이번 달의 마지막 날(lastday)을 구한 다음 날 오후 5시를 계산하는 데 사용한다. 
+        lastday = calendar.monthrange(tmnow.year, tmnow.month)[1]
+        if tmnow.month == 12 and tmnow.day == lastday:
+            tmnext = tmnow.replace(year=tmnow.year+1, month=1, day=1, hour=17, minute=0, second=0)
+        elif tmnow.day == lastday:
+            tmnext = tmnow.replace(month=tmnow.month+1, day=1, hour=17, minute=0, second=0)
+        else:
+            tmnext = tmnow.replace(day=tmnow.day+1, hour=17, minute=0, second=0)
+        tmdiff = tmnext - tmnow
+        secs = tmdiff.seconds
+
+        # 다음 날 오후 5시에 execute_daily() 메서드를 실행하는 타이머(Timer) 객체를 생성한다. 
+        t = Timer(secs, self.execute_daily)
+        print("Waiting for next update ({}) ...".format(tmnext.strftime('%Y-%m-%d %H:%M')))
+        t.start()   
+
     
 if __name__ == '__main__':
     # DBUpdater.py가 단독으로 실행되면 DBUpdater 객체를 생성한다. 
