@@ -1,7 +1,11 @@
-import pymysql
 import pandas as pd
-import mariadb_config
+from bs4 import BeautifulSoup
+import urllib, pymysql, calendar, time, json
+from urllib.request import urlopen 
 from datetime import datetime
+from threading import Timer
+import mariadb_config
+
 
 passwd = mariadb_config.passwd
 
