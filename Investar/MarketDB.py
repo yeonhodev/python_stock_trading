@@ -29,8 +29,15 @@ class MarketDB:
         for idx in range(len(companyInfo)):
             self.codes[companyInfo['code'].values[idx]] = companyInfo['company'].values[idx]
 
+    # 인수=None 형식을 사용하면 인숫값이 주어지지 않았을 때 기본 값으로 처리한다. 
     def get_daily_price(self, code, start_date=None, end_date=None):
         """daily_price 테이블에서 읽어와서 데이터프레임으로 반환"""
+        # 만일 조회시작일로 넘겨받은 인수가 None이면 인수가 입력되지 않은 경우이므로
+        if start_date is None:
+            one_year_ago = datetime.today() - timedelta(days=365)
+            # 1년 전 오늘 날짜로 %Y-%m-%d 형식의 문자열로 처리한다. 
+            start_date = one_year_ago.strftime('%Y-%m-%d')
+            print("start_date is initialized to '{}'".format(start_date))
         sql = f"SELECT * FROM daily_price WHERE code = '{code}' and date >= '{start_date}' and date <= '{end_date}'"
         # 팬더스의 read_sql() 함수를 이용해 SELECT 결과를 데이터프레임으로 가져오면 정수형 인덱스가 별도로 생성된다. 
         df = pd.read_sql(sql, self.conn)
