@@ -32,7 +32,9 @@ class MarketDB:
     def get_daily_price(self, code, start_date=None, end_date=None):
         """daily_price 테이블에서 읽어와서 데이터프레임으로 반환"""
         sql = f"SELECT * FROM daily_price WHERE code = '{code}' and date >= '{start_date}' and date <= '{end_date}'"
+        # 팬더스의 read_sql() 함수를 이용해 SELECT 결과를 데이터프레임으로 가져오면 정수형 인덱스가 별도로 생성된다. 
         df = pd.read_sql(sql, self.conn)
+        # 따라서 df.index = df['date']로 데이터프레임의 인덱스를 date 칼럼으로 새로 설정해야 한다. 
         df.index = df['date']
         return df
 
