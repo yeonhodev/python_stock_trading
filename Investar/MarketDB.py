@@ -13,8 +13,10 @@ class MarketDB:
     def __init__(self):
         """생성자: MariaDB 연결 및 종목코드 딕셔너리 생성"""
         self.conn = pymysql.connect(host='localhost', user='root', password='snake.land.', db='INVESTAR', charset='utf8')
-        self.codes = dict()
-        self.getCompanyInfo()
+        # dict()로 생성 가능하지만, 조금 더 파이썬답게 생성하고자 리터럴을 사용하여 생성했다. 
+        self.codes = {}
+        # get_com_info() 함수를 호출하여 마리아디비에서 company_info 테이블을 읽어와서 codes에 저장한다.
+        self.get_com_info()
         
     def __del__(self):
         """소멸자: MariaDB 연결 해제"""
