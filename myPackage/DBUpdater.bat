@@ -1,1 +1,1 @@
-python C:\Users\danny\Documents\dev\python_stock_trading\Investar\DBUpdater.py
+python C:\Users\danny\Documents\dev\python_stock_trading\myPackage\Investar\DBUpdater.py
