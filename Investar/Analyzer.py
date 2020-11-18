@@ -37,6 +37,7 @@ class MarketDB:
             start_date = one_year_ago.strftime('%Y-%m-%d')
             print("start_date is initialized to '{}'".format(start_date))
         else:
+            # 정규표현식 \D+로 분리하면 연, 월, 일에 해당하는 숫자만 남게 된다. 
             start_lst = re.split('\D+', start_date)
             if start_lst[0] == '':
                 start_lst = start_lst[1:]
@@ -52,6 +53,7 @@ class MarketDB:
             if start_day < 1 or start_day > 31:
                 print(f"ValueError: start_day({start_day:d}) is wrong.")
                 return
+            # 분리된 연, 월, 일을 다시 {:04d}-{:02d}-{:02d} 형식 문자열로 구성하면 DB에서 저장된 날짜 형식과 같게 된다. {:02d}는 2자리 숫자로 표시하되 앞자리가 비어있으면 0으로 채우라는 뜻이다. 
             start_date=f"{start_year:04d}-{start_month:02d}-{start_day:02d}"
 
         if end_date is None:
