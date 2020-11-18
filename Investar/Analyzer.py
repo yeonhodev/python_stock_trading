@@ -76,14 +76,20 @@ class MarketDB:
                 print(f"ValueError: end_day({end_day:d}) is wrong.")
                 return
             end_date = f"{end_year:04d}-{end_month:02d}-{end_day:02d}"
-         
+        
+        # codes 딕셔너리로 부터 키들을 뽑아서 키(종목코드) 리스트를 생성한다. 
         codes_keys = list(self.codes.keys())
+        # codes 딕셔너리로 부터 값들을 뽑아서 값(회사명) 리스트를 생성한다. 
         codes_values = list(self.codes.values())
 
+        # 사용자가 입력한 값(code)이 '005930'이라서 키(종목코드) 리스트에 존재한다면 별도의 처리 없이 그대로 사용하면 된다.
         if code in codes_keys:
             pass
+        # 사용자가 입력한 값(code)이 '삼성전자'라서 값(회사명) 리스트에 존재한다면
         elif code in codes_values:
+            # 값(회사명) 리스트에서 '삼성전자'의 인덱스를 구한 뒤,
             idx = codes_values.index(code)
+            # 키(종목코드) 리스트에서 동일한 인덱스에 위치한 값('005930')을 구할 수 있다. 
             code = codes_keys[idx]
         else:
             print(f"ValueError: Code({code}) doesn't exist.")
