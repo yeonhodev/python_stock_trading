@@ -40,7 +40,6 @@ class DBUpdater:
             """
             curs.execute(sql)
         self.conn.commit()
-
         self.codes = dict()
 
     def __del__(self):
@@ -75,7 +74,8 @@ class DBUpdater:
 
         # 위에서 읽은 데이터프레임을 이용해서 종목코드와 회사명으로 codes 딕셔너리를 만든다.  
         for idx in range(len(df)):
-            self.codes[df['code'].values[idx]]=df['company'].values[idx]
+            self.codes[df['code'].values[idx]] = df['company'].values[idx]
+
         with self.conn.cursor() as curs:
             sql = "SELECT max(last_update) FROM company_info"
             curs.execute(sql)
@@ -108,7 +108,7 @@ class DBUpdater:
                 if doc is None:
                     return None
                 html = BeautifulSoup(doc, 'lxml')
-                pgrr = htmlfind("td", class_="pgRR")
+                pgrr = html.find("td", class_="pgRR")
                 if pgrr is None:
                     return None
                 s = str(pgrr.a["href"]).split('=')
@@ -129,7 +129,7 @@ class DBUpdater:
             df['date'] = df['date'].replace('.', '-')
             df = df.dropna()
             # 마리아디비에서 BIGINT 형으로 저장한 칼럼들의 데이터형을 int 형으로 변경한다. 
-            df[['close', 'diff', 'open', 'high', 'low', 'volume']] = df[['close', 'diff', 'open', 'high', 'lose', 'volume']].astype(int)
+            df[['close', 'diff', 'open', 'high', 'low', 'volume']] = df[['close', 'diff', 'open', 'high', 'close', 'volume']].astype(int)
             # 원하는 순서대로 칼럼을 재조합하여 데이터프레임을 만든다. 
             df = df[['date', 'open', 'high', 'low', 'close', 'diff', 'volume']]
         except Exception as e:
@@ -141,7 +141,7 @@ class DBUpdater:
         """네이버에서 읽어 온 주식 시세를 DB에 REPLACE"""
         with self.conn.cursor() as curs:
             # 인수로 넘겨받은 데이터프레임을 튜플로 순회처리한다. 
-            for r in df.intertuples():
+            for r in df.itertuples():
                 sql = f"REPLACE INTO daily_price VALUES ('{code}', '{r.date}', {r.open}, {r.high}, {r.low}, {r.close}, {r.diff}, {r.volume})"
                 # REPLACE INTO 구문으로 daily_price 테이블을 업데이트 한다. 
                 curs.execute(sql)
@@ -152,7 +152,7 @@ class DBUpdater:
     def update_daily_price(self, pages_to_fetch):
         """KRX 상장법인의 주식 시세를 네이버로부터 읽어서 DB에 업데이트"""
         # self.codes 딕셔너리에 저장된 모든 종목코드에 대해 순회처리한다. 
-        for idx, code in enumerate(self, codes):
+        for idx, code in enumerate(self.codes):
             # read_naver() 메서드를 이용하여 종목코드에 대한 일별 시세 데이터 프레임을 구한다. 
             df = self.read_naver(code, self.codes[code], pages_to_fetch)
             if df is None:
@@ -201,8 +201,7 @@ class DBUpdater:
 if __name__ == '__main__':
     # DBUpdater.py가 단독으로 실행되면 DBUpdater 객체를 생성한다. 
     dbu = DBUpdater()
-
     dbu.execute_daily()
     
     # company_info 테이블에 오늘 업데이트 된 내용이 있는지 확인하고, 없으면 read_krx_code()를 호출하여 company_info 테이블에 업데이트 하고 codes 딕셔너리에도 저장한다. 
-    dbu.update_comp_info()
+    #dbu.update_comp_info()
