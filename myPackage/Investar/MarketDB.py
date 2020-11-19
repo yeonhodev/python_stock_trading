@@ -13,37 +13,23 @@ class MarketDB:
     def __init__(self):
         """생성자: MariaDB 연결 및 종목코드 딕셔너리 생성"""
         self.conn = pymysql.connect(host='localhost', user='root', password='snake.land.', db='INVESTAR', charset='utf8')
-        # dict()로 생성 가능하지만, 조금 더 파이썬답게 생성하고자 리터럴을 사용하여 생성했다. 
-        self.codes = {}
-        # get_com_info() 함수를 호출하여 마리아디비에서 company_info 테이블을 읽어와서 codes에 저장한다.
-        self.get_comp_info()
+        self.codes = dict()
+        self.getCompanyInfo()
         
     def __del__(self):
         """소멸자: MariaDB 연결 해제"""
         self.conn.close()
 
-    def get_comp_info(self):
+    def getCompanyInfo(self):
         """company_info 테이블에서 읽어와서 companyData와 codes에 저장"""
         sql = "SELECT * FROM company_info"
         companyInfo = pd.read_sql(sql, self.conn)
         for idx in range(len(companyInfo)):
             self.codes[companyInfo['code'].values[idx]] = companyInfo['company'].values[idx]
 
-    # 인수=None 형식을 사용하면 인숫값이 주어지지 않았을 때 기본 값으로 처리한다. 
-    def get_daily_price(self, code, start_date=None, end_date=None):
+    def getDailyPrice(self, code, startDate, endDate):
         """daily_price 테이블에서 읽어와서 데이터프레임으로 반환"""
-        # 만일 조회시작일로 넘겨받은 인수가 None이면 인수가 입력되지 않은 경우이므로
-        if start_date is None:
-            one_year_ago = datetime.today() - timedelta(days=365)
-            # 1년 전 오늘 날짜로 %Y-%m-%d 형식의 문자열로 처리한다. 
-            start_date = one_year_ago.strftime('%Y-%m-%d')
-            print("start_date is initialized to '{}'".format(start_date))
-        sql = f"SELECT * FROM daily_price WHERE code = '{code}' and date >= '{start_date}' and date <= '{end_date}'"
-        # 팬더스의 read_sql() 함수를 이용해 SELECT 결과를 데이터프레임으로 가져오면 정수형 인덱스가 별도로 생성된다. 
+        sql = "SELECT * FROM daily_price WHERE code = '{}' and date >= '{}' and date <= '{}'".format(code, startDate, endDate)
         df = pd.read_sql(sql, self.conn)
-        # 따라서 df.index = df['date']로 데이터프레임의 인덱스를 date 칼럼으로 새로 설정해야 한다. 
         df.index = df['date']
         return df
-
-
-
