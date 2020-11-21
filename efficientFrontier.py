@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as import pd
+import pandas as pd
 import matplotlib.pyplot as plt
 from Investar import Analyzer
 
