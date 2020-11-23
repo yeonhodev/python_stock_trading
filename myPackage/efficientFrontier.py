@@ -31,3 +31,35 @@ print(daily_ret)
 print(annual_ret)
 print(daily_cov)
 print(annual_cov)
+
+# Monte Carlo Simulation
+# 포트폴리오 20,000개를 생성하는데 range() 함수와 for in 구문을 사용했다. for in 구문에서 반복횟수를 사용할 일이 없으면 관습적으로 _ 변수에 할당한다. 
+for _ in range(20000):
+    # 4개의 랜덤 숫자로 구성된 배열을 생성한다. 
+    weights = np.random.random(len(stocks))
+    print(weights)
+    # 위에서 구한 4개의 랜덤 숫자의 총합으로 나눠 4 종목 비중의 합이 1이 되도록 조정한다. 
+    weights /= np.sum(weights)
+    print(weights)
+
+    # 랜덤하게 생성한 종목별 비중 배열과 종목별 연간 수익률을 곱해 해당 포트폴리오 전체 수익률(returns)을 구한다. 
+    returns = np.dot(weights, annual_ret)
+    # 종목별 연간 공분산과 종목별 비중 배열을 곱한 뒤 이를 다시 종목별 비중의 전치로 곱한다. 
+    risk = np.sqrt(np.dot(weights.T, np.dot(annual_cov, weights)))
+
+    # 포트폴리오 20,000개 수익률, 리스크, 종목별 비중을 각각 리스트에 추가한다. 
+    port_ret.append(returns)
+    port_risk.append(risk)
+    port_weights.append(weights)
+
+portfolio = {'Returns': port_ret, 'Risk': port_risk}
+print(portfolio)
+
+# i 값은 0, 1, 2, 3 순으로 변한다. 이때 s값은 삼성전자, sk하이닉스, 현대자동차, Naver 순으로 변한다. 
+for i, s in enumerate(stocks):
+    # portfolio 딕셔너리에 삼성전자, sk하이닉스, 현대자동차, Naver 키 순서로 비중값을 추가한다.
+    portfolio[s] = [weights[i] for weight in port_weights]
+df = pd.DataFrame(portfolio)
+# 최종 생성된 df 데이터프레임을 출력하면, 시총 상위 4개 종목의 보유 비율에 따라 포트폴리오 20,000개가 각기 다른 리스크와 예상 수익률을 가지는 것을 확인 할 수 있다. 
+df = df[['Returns', 'Risk'] + [s for s in stocks]]
+print(df)
