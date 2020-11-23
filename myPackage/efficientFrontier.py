@@ -25,3 +25,9 @@ port_ret = []
 # 시총 상위 4종목 비중을 다르게 해 포트폴리오 20,000개를 생성한다. 포트폴리오 수익률, 리스크, 종목 비중을 저장할 각 리스트를 생성한다. 
 port_risk = []
 port_weights = []
+
+# Display results
+print(daily_ret)
+print(annual_ret)
+print(daily_cov)
+print(annual_cov)
