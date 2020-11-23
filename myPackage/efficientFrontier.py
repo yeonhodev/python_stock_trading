@@ -37,10 +37,9 @@ print(annual_cov)
 for _ in range(20000):
     # 4개의 랜덤 숫자로 구성된 배열을 생성한다. 
     weights = np.random.random(len(stocks))
-    print(weights)
+    
     # 위에서 구한 4개의 랜덤 숫자의 총합으로 나눠 4 종목 비중의 합이 1이 되도록 조정한다. 
     weights /= np.sum(weights)
-    print(weights)
 
     # 랜덤하게 생성한 종목별 비중 배열과 종목별 연간 수익률을 곱해 해당 포트폴리오 전체 수익률(returns)을 구한다. 
     returns = np.dot(weights, annual_ret)
@@ -63,3 +62,9 @@ df = pd.DataFrame(portfolio)
 # 최종 생성된 df 데이터프레임을 출력하면, 시총 상위 4개 종목의 보유 비율에 따라 포트폴리오 20,000개가 각기 다른 리스크와 예상 수익률을 가지는 것을 확인 할 수 있다. 
 df = df[['Returns', 'Risk'] + [s for s in stocks]]
 print(df)
+
+df.plot.scatter(x='Risk', y='Returns', figsize=(10, 7), grid=True)
+plt.title('Efficient Frontier')
+plt.xlabel('Risk')
+plt.ylabel('Expected Returns')
+plt.show()
