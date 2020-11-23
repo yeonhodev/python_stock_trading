@@ -74,6 +74,7 @@ class DBUpdater:
 
         # 위에서 읽은 데이터프레임을 이용해서 종목코드와 회사명으로 codes 딕셔너리를 만든다.  
         for idx in range(len(df)):
+        # for idx in reversed(range(len(df))): -> Scrapping을 높은 code 부터 진행할 때 사용
             self.codes[df['code'].values[idx]] = df['company'].values[idx]
 
         with self.conn.cursor() as curs:
