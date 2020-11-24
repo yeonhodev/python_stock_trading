@@ -44,6 +44,10 @@ max_sharpe = df.loc[df['Sharpe'] == df['Sharpe'].max()]
 # 리스크 칼럼에서 리스크 값이 제일 작은 행을 min_risk로 정한다.
 min_risk = df.loc[df['Risk'] == df['Risk'].min()]
 
+# Return result looks wrong. Will need to be fixed. 
+print(max_sharpe)
+print(min_risk)
+
 # 포트폴리오의 샤프 지수에 따라 컬러맵을 'viridis'로 표시하고 테두리는 검정(k)으로 표시한다. 
 df.plot.scatter(x='Risk', y='Returns', c='Sharpe', cmap='viridis', edgecolors='k', figsize=(11, 7), grid=True)
 # 샤프 지수가 가장 큰 포트폴리오를 300 크기의 붉은 별표(*)로 표시한다.
@@ -54,3 +58,4 @@ plt.title('Portfolio Optimization')
 plt.xlabel('Risk')
 plt.ylabel('Expected Returns')
 plt.show()
+
