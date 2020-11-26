@@ -18,7 +18,7 @@ df = df[19:]
 plt.figure(figsize=(9, 5))
 # x좌표 df.index에 해당하는 종가를 y좌표로 설정해 파란색(#0000ff) 실선으로 표시한다.
 plt.plot(df.index, df['close'], color='#0000ff', label='Close')
-# x좌표 df.index에 해당하는 상단 볼린저 밴드값을 y좌표로 설정해 검은 실선(r--)으로 표시한다.
+# x좌표 df.index에 해당하는 상단 볼린저 밴드값을 y좌표로 설정해 붉은 실선(r--)으로 표시한다.
 plt.plot(df.index, df['upper'], 'r--', label='Upper band')
 plt.plot(df.index, df['MA20'], 'k--', label='Moving average 20')
 plt.plot(df.index, df['lower'], 'c--', label='Lower band')
