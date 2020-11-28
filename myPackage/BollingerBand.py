@@ -13,7 +13,9 @@ df['upper'] = df['MA20'] + (df['stddev'] * 2)
 # 중간 볼린저 밴드 - (2 x 표준편차)를 하단 볼린저 밴드로 계산한다. 
 df['lower'] = df['MA20'] - (df['stddev'] * 2)
 # (종가 - 하단 밴드) / (상단 밴드 - 하단 밴드)를 구해 %B 칼럼을 생성한다.
-df['PB'] = (df['close'] - df['lower']) / (df['upper'] - df['lower'])
+# df['PB'] = (df['close'] - df['lower']) / (df['upper'] - df['lower'])
+# (상단 밴드 - 하단 밴드) / 중간 밴드 X 100을 구해 bandwidth(밴드폭) 칼럼을 생성한다. 
+df['bandwidth'] = (df['upper'] - df['lower']) / df['MA20'] * 100
 # 위는 19번째 행까지 NaN 이므로 값이 있는 20번째 행부터 사용한다.
 df = df[19:]
 
@@ -33,8 +35,10 @@ plt.legend(loc='best')
 
 # %B 차트를 2행 1열의 그리드에서 2열에 배치한다.
 plt.subplot(2, 1, 2)
-# x좌표 df.index 에 해당하는 %b 값을 y좌표로 설정해 파란(b)실선으로 표시한다. 
-plt.plot(df.index, df['PB'], color='b', label='%B')
+# x좌표 df.index에 해당하는 %b 값을 y좌표로 설정해 파란(b)실선으로 표시한다. 
+# plt.plot(df.index, df['PB'], color='b', label='%B')
+# x좌표 df.index에 해당하는 bandwidth값을 y좌표로 설정해 자홍(magenta) 실선으로 표시한다. 
+plt.plot(df.index, df['bandwidth'], color='m', label='Bandwidth') 
 plt.grid(True)
 plt.legend(loc='best')
 plt.show()
