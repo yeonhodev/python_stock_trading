@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from Investar import Analyzer
 
 mk = Analyzer.MarketDB()
-df = mk.get_daily_price('SK하이닉스', '2018-11-01', '2019-12-31')
+df = mk.get_daily_price('SK하이닉스', '2018-11-01')
 
 df['MA20'] = df['close'].rolling(window=20).mean()
 df['stddev'] = df['close'].rolling(window=20).std()
