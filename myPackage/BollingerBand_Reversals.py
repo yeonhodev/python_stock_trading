@@ -24,6 +24,15 @@ plt.plot(df.index, df['upper'], 'r--', label='Upper band')
 plt.plot(df.index, df['MA20'], 'k--', label='Moving average 20')
 plt.plot(df.index, df['lower'], 'c--', label='Lower band')
 plt.fill_between(df.index, df['upper'], df['lower'], color='0.9')
+for i in range(0, len(df.close)):
+    # %b가 0.05보다 작고, 21일 기준 II%가 0보다 크면
+    if df.PB.values[i] < 0.05 and df.II21.values[i] > 0:
+        # 첫 번째 그래프에 매수 시점을 나타내는 종가 위치에 빨간색 삼각형을 표시한다. 
+        plt.plot(df.index.values[i], df.close.values[i], 'r^')
+    # %b가 0.95보다 크고, 21일 기준 II%가 0보다 작으면 
+    elif df.PB.values[i] > 0.95 and df.IIP21.values[i] < 0:
+        # 첫 번째 그래프에 매도 시점을 나타내는 종가 위치에 파란색 삼각형을 표시한다. 
+        plt.plot(df.index.values[i], df.close.values[i], 'bv')
 
 plt.legend(loc='best')
 plt.subplot(3, 1, 2)
@@ -35,6 +44,13 @@ plt.legend(loc='best')
 plt.subplot(3, 1, 3)
 # 녹색 실선으로 21일 일중 강도율을 표시한다. 
 plt.bar(df.index, df['IIP21'], color='g', label='II% 21day')
+for i in range(0, len(df.close)):
+    if df.PB.values[i] < 0.05 and df.IIP21.values[i] > 0:
+        # 세 번째 일중 강도율 그래프에서 매수 시점을 빨간색 삼각형으로 표시한다.
+        plt.plot(df.index.values[i], 0, 'r^')
+    elif df.PB.values[i] > 0.05 and df.IIP21.values[i] < 0:
+        # 세 번째 일중 강도율 그래프에서 매도 시점을 파란색 삼각형으로 표시한다. 
+        plt.plot(df.index.values[i], 0, 'bv')
 plt.grid(True)
 plt.legend(loc='best')
 plt.show()
