@@ -37,7 +37,7 @@ df = df.assign(fast_k=fast_k, slow_d=slow_d).dropna()
 
 plt.figure(figsize=(9, 7))
 p1 = plt.subplot(2, 1, 1)
-plt.title('Triple Screen Trading - First Screen (NCSOFT)')
+plt.title('Triple Screen Trading - Second Screen (NCSOFT)')
 plt.grid(True)
 # ohlc의 숫자형 일자, 시가, 고가, 저가, 종가 값을 이용해서 캔들 차트를 그린다. 
 candlestick_ohlc(p1, ohlc.values, width=6, colorup='red', colordown='blue')
