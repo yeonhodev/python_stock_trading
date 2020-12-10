@@ -34,6 +34,31 @@ class DualMomentum:
             return
         end_date = result[0].strftime('%Y-%m-%d')
 
+        # KRX 종목별 수익률을 구해서 2차원 리스트 형태로 추가
+        # row라는 빈 리스트를 먼저 만든 후, 나중에 2차원 리스트로 처리한다. 
+        row = []
+        columns = ['code', 'company', 'old_price', 'new_price', 'returns']
+        for _, code in enumerate(self.mk.codes):
+            sql = f"SELECT close FROM daily_price WHERE code='{code}' AND date='{start_date}'"
+            cursor.execute(sql)
+            result = cursor.fetchone()
+            if (result is None):
+                continue
+            # start_date 일자에 해당하는 가격(old_price)을 daily_price 테이블로부터 조회한다. 
+            old_price =  int(result[0])
+            sql = f"SELECT close FROM daily_price WHERE code='{code}' and date='{end_date}'"
+            cursor.execute(sql)
+            result = cursor.fetchone()
+            if (result is None):
+                continue
+            # end_date 일자에 해당하는 가격(new_price)을 daily_price 테이블로 부터 조회한다. 
+            new_price = int(result[0])
+            # 해당 종목의 수익률은 returns = (new_price / old_price - 1) * 100으로 구한다. 
+            returns = (new_price / old_price - 1) * 100
+            # 종목별로 구한 종목코드, 구 가격, 신 가격, 수익률을 rows에 2차원 리스트 형태로 추가한다. 
+            rows.append([code, self.mk.codes[code], old_price, new_price, returns])
+
+
         return df
     
     def get_abs_momentum(self, rltv_momentum, start_date, end_date):
