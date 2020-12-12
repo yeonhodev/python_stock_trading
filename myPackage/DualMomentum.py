@@ -58,7 +58,15 @@ class DualMomentum:
             # 종목별로 구한 종목코드, 구 가격, 신 가격, 수익률을 rows에 2차원 리스트 형태로 추가한다. 
             rows.append([code, self.mk.codes[code], old_price, new_price, returns])
 
-
+        # 상대 모멘텀 데이터프레임을 생성한 후 수익률 순으로 출력
+        df = pd.DataFrame(rows, columns=columns)
+        df = df[['code', 'company', 'old_price', 'new_price', 'returns']]
+        df = df.sort_values(by='returns', ascending=False)
+        df = df.head(stock_count)
+        df.index = pd.Index(range(stock_count))
+        connection.close()
+        print(df)
+        print(f"\nRelative momentum ({start_date} ~ {end_date}) : {df['returns'].mean():.2f}% \n")
         return df
     
     def get_abs_momentum(self, rltv_momentum, start_date, end_date):
