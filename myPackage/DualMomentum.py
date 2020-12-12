@@ -1,3 +1,9 @@
+# DualMomentum.py
+import pandas as pd
+import pymysql
+from datetime import datetime
+from datetime import timedelta
+from Investar import Analyzer
 import mariadb_config
 
 passwd = mariadb_config.passwd
@@ -16,6 +22,7 @@ class DualMomentum:
         connection = pymysql.connect(host='localhost', port=3306, db='INVESTAR', user='root', passwd=passwd, autocommit=True)
         cursor = connection.cursor()
 
+        # 사용자가 입력한 시작일을 DB에서 조회되는 일자로 보정
         sql = f"SELECT MAX(date) FROM daily_price WHERE date <= '{start_date}'"
         # daily_price 테이블에서 사용자가 입력한 일자와 같거나 작은 일자를 조회함으로써 실재 거래일을 구한다. 
         cursor.execute(sql)
@@ -26,6 +33,7 @@ class DualMomentum:
         # DB에서 조회된 거래일을 %Y-%m-%d 포맷 문자열로 변환해 사용자가 입력한 조회 시작 일자 변수에 반영한다. 
         start_date = result[0].strftime('%Y-%m-%d')
 
+        # 사용자가 입력한 종료 일자를 DB에서 조회되는 일자로 보정
         sql = f"SELECT MAX(date) FROM daily_price WHERE date <= '{end_date}'"
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -75,4 +83,52 @@ class DualMomentum:
             - start_date    : 절대 모멘텀을 구할 매수일 ('2020-01-01')
             - end_date      : 절대 모멘텀을 구할 매도일 ('2020-12-31')
         """
+        stockList = list(rltv_momentum['code'])
+        connection = pymysql.connect(host='localhost', port=3306, db='INVESTAR', user='root', passwd=passwd, autocommit=True)
+        cursor = connection.cursor()
+
+        # 사용자가 입력한 매수일을 DB에서 조회되는 일자로 변경
+        sql = f"SELECT MAX(date) FROM daily_price WHERE date <= '{start_date}'"
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        if (result[0] is None):
+            print("{} -> returned None".format(sql))
+            return
+        start_date = result[0].strftime('%Y-%m-%d')
+
+        # 사용자가 입력한 매도일을 DB에서 조회되는 일자로 변경
+        sql = f"SELECT MAX(date) FROM daily_price WHERE date <= '{end_date}'"
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        if (result[0] is None):
+            print("{} -> returned None".format(sql))
+            return
+        end_date = result[0].strftime('%Y-%m-%d')
+
+        # 상대 모멘텀의 종목별 수익률을 구해서 2차원 리스트 형태로 추가
+        row = []
+        columns = ['code', 'company', 'old_price', 'new_price', 'returns']
+        for _, code in enumerate(stockList):
+            sql = f"SELECT close FROM daily_price WHERE code='{code}' and date='{start_date}'"
+            cursor.execute(sql)
+            result = cursor.fetchone()
+            if (result is None):
+                continue
+            old_price = int(result[0])
+            sql = f"SELECT close FROM daily_price WHERE code='{code}' and date='{end_date}'"
+            cursor.execute(sql)
+            result = cursor.fetchone()
+            if (result is None):
+                continue
+            new_price = int(result[0])
+            returns = (new_price / old_price - 1) * 100
+            row.append([code, self.mk.codes[code], old_price, new_price, returns])
+
+        # 절대 모멘텀 데이터프레임을 생성한 후 수익률순으로 출력
+        df = pd.DataFrame(rows, columns=columns)
+        df = df[['code', 'company', 'old_price', 'new_price', 'returns']]
+        df = df.sort_values(by='returns', ascending=False)
+        connection.close()
+        print(df)
+        print(f"\nAbsolute momentum ({start_date} ~ {end_date}) : {df['returns'].mean():.2f}%")
         return
