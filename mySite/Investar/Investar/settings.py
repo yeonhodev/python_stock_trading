@@ -31,12 +31,13 @@ ALLOWED_HOSTS = ['127.0.0.0', 'localhost']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.admin',             # 관리자 기능 관련 기본 앱
+    'django.contrib.auth',              # 인증 처리
+    'django.contrib.contenttypes',      # 모델 관리
+    'django.contrib.sessions',          # 세션 및 방문자 관리
+    'django.contrib.messages',          # 메시지 처리
+    'django.contrib.staticfiles',       # 정적 파일 처리
+    'hello'
 ]
 
 MIDDLEWARE = [
