@@ -14,8 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from hello import views # hello 앱의 views를 임포트 한 뒤
+from django.urls import path, re_path # django.urls로 부터 re_path() 함수를 추가적으로 임포트 한다.
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    re_path(r'^(?P<name>[A-Z][a-z]*)$', views.sayHello), # urlpatterns 리스트의 마지막에 hello 앱의 URL에 대한 뷰 처리를 추가한다. 
 ]
