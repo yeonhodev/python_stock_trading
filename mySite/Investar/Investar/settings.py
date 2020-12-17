@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',          # 메시지 처리
     'django.contrib.staticfiles',       # 정적 파일 처리
     'hello',
-    'index'
+    'index',
+    'balance'
 ]
 
 MIDDLEWARE = [

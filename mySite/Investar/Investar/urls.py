@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^(?P<name>[A-Z][a-z]*)$', views.sayHello), # urlpatterns 리스트의 마지막에 hello 앱의 URL에 대한 뷰 처리를 추가한다. 
     path('index/', index_views.main_view), # 제일 마지막 라인에 path() 함수를 추가해서 URLConf를 수정한다. URL이 'index/'이면 index 앱 뷰의 main_view() 함수로 매핑하라는 의미다. 
+    path('balance/', balance_views.main_view) # URL이 balance인 경우 balance 앱 뷰의 main_view() 함수로 매핑 될 것이다. 
 ]
