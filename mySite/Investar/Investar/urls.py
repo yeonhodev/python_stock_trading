@@ -17,6 +17,7 @@ from django.contrib import admin
 from hello import views # hello 앱의 views를 임포트 한 뒤
 from django.urls import path, re_path # django.urls로 부터 re_path() 함수를 추가적으로 임포트 한다.
 from index import views as index_views # index 모듈 내의 views를 index_views로 임포트한 후
+from balance import views as balance_views # balance 모듈 내의 views를 balance_views로 임포트한 후
 
 urlpatterns = [
     path('admin/', admin.site.urls),
