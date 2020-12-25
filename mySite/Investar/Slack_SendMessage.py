@@ -1,5 +1,8 @@
 from slacker import Slacker
-slack = Slacker('xoxb-1618940310272-1595104370450-qwZa7Z5JJVMdg7PW74Tu0R1Y')
+import slack_config
+
+slack_token = slack_config.token
+slack = Slacker(slack_token)
 
 markdown_text = '''
 This message is plain.
