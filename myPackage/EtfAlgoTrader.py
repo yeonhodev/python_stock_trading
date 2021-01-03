@@ -1,5 +1,9 @@
 import ctypes
 import win32com.client
+from slacker import Slacker
+from datetime import datetime
+import slack_config
+
 # CREON Plus 공동 Object
 cpStatus = win32com.client.Dispatch('CpUtil.CpCybos')      # 시스템 상태 정보
 cpTradeUtil = win32com.client.Dispatch('CpTrade.CpTdUtil')  # 주문 관련 도구
@@ -22,3 +26,13 @@ def check_creon_system():
         return False
     
     return True
+
+slack_token = slack_config.token
+# 7장 장고 웹 서버 구축 및 자동화에서 발급한 토큰을 입력한다. 
+slack = Slacker(slack_token)
+def dbgout(message):
+    # datetime.now() 함수로 현재 시간을 구한 후 [월/일 시:분:초] 형식으로 출력한 후 한 칸 띄우고 함수 호출 시 인수로 받은 message 문자열을 출력한다. 
+    print(datetime.now().strftime('[%m/%d %H:%M:%S]'), message)
+    strbuf = datetime.now().strftime('[%m/%d %H:%M:%S]') + message
+    # etf-algo-trading 채널로 메세지를 보내려면 워크스페이스에 etf-algo-trading 채널을 미리 만들어 둬야 한다. 별도의 채널을 만들기 싫다면 #etf-algo-trading 대신 #general을 인수로 주어 일반 채널로 메시지를 보내도 된다. 
+    slack.chat.post_message('#etf-algo-trading', strbuf)
